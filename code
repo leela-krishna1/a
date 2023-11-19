@@ -1,0 +1,65 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+typedef pair<int, int> vertex;
+
+struct comparevertices {
+    bool operator()(const vertex& v1, const vertex& v2) const {
+        return v1.second > v2.second;
+    }
+};
+
+vector<int> shortest_path_distances(const vector<vector<int>>& graph, int start_vertex) {
+    int num_vertices = graph.size();
+
+    vector<int> distances(num_vertices, int_max);
+    distances[start_vertex] = 0;
+
+    priority_queue<vertex, vector<vertex>, comparevertices> pq;
+    pq.push(make_pair(start_vertex, 0));
+
+    while (!pq.empty()) {
+        int current_vertex = pq.top().first;
+        int current_distance = pq.top().second;
+
+        pq.pop();
+
+        if (current_distance > distances[current_vertex]) continue;
+
+        for (int neighbor_vertex = 0; neighbor_vertex < num_vertices; ++neighbor_vertex) {
+            if (graph[current_vertex][neighbor_vertex] != int_max) {
+                int new_distance = current_distance + graph[current_vertex][neighbor_vertex];
+
+                if (new_distance < distances[neighbor_vertex]) {
+                    distances[neighbor_vertex] = new_distance;
+                    pq.push(make_pair(neighbor_vertex, new_distance));
+                }
+            }
+        }
+    }
+
+    return distances;
+}
+
+int main() {
+    vector<vector<int>> graph = {
+        {int_max, 4, int_max, int_max},
+        {int_max, int_max, 1, 7},
+        {int_max, int_max, int_max, 2},
+        {int_max, int_max, int_max, int_max}
+    };
+
+    int start_vertex = 0;
+
+    vector<int> distances = shortest_path_distances(graph, start_vertex);
+
+    cout << "shortest distances from start vertex " << start_vertex << ":" << endl;
+    for (int i = 0; i < distances.size(); ++i) {
+        cout << "vertex " << i << ": " << distances[i] << endl;
+    }
+
+    return 0;
+}
